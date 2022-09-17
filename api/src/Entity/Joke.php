@@ -10,9 +10,14 @@ use App\State\JokeStateProvider;
 
 #[ApiResource(
     operations: [
-        new Get(provider: JokeStateProvider::class),
-        new GetCollection(provider: JokeStateProvider::class)
-    ]
+        new Get(),
+        new GetCollection()
+    ],
+    cacheHeaders: [
+        'max_age' => 60,
+        'shared_max_age' => 120
+    ],
+    provider: JokeStateProvider::class
 )]
 class Joke
 {
