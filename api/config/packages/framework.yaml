@@ -22,6 +22,11 @@ framework:
     php_errors:
         log: true
 
+    http_client:
+        scoped_clients:
+            joke.client:
+                base_uri: https://api.chucknorris.io/jokes/
+
 when@test:
     framework:
         test: true
