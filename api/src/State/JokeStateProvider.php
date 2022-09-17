@@ -19,20 +19,41 @@ class JokeStateProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|iterable|null
     {
-        if ($operation instanceof CollectionOperationInterface) {
-            $joke = $this->getJoke();
-            return [new Joke(), new Joke()];
+        if ($operation instanceof CollectionOperationInterface || $uriVariables['id'] === null) {
+            return $this->getJokes();
         }
 
-        $joke = $this->getJoke($uriVariables['id']);
-
-        return (new Joke())->setId($joke['id'])->setJoke($joke['value']);
+        return $this->getJoke($uriVariables['id']);
     }
 
-    private function getJoke(?string $id)
+    private function getJoke(?string $id): ?Joke
     {
         $request = $this->jokeClient->request('GET', $id ?? 'random');
 
-        return $request->toArray();
+        try {
+            $joke = $request->toArray();
+
+            return (new Joke())->setId($joke['id'])->setJoke($joke['value']);
+        }
+        catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    private function getJokes(): array
+    {
+        $request = $this->jokeClient->request('GET', 'search', [
+            'query' => [
+                'query' => 'action',
+            ],
+        ]);
+
+        $jokes = [];
+
+        foreach ($request->toArray() as $joke) {
+            $jokes[] = (new Joke())->setId($joke['id'])->setJoke($joke['value']);
+        }
+
+        return $jokes;
     }
 }
