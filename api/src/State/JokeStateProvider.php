@@ -49,8 +49,7 @@ class JokeStateProvider implements ProviderInterface
         ]);
 
         $jokes = [];
-
-        foreach ($request->toArray() as $joke) {
+        foreach ($request->toArray()['result'] as $joke) {
             $jokes[] = (new Joke())->setId($joke['id'])->setJoke($joke['value']);
         }
 
