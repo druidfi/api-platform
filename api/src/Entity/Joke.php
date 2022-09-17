@@ -6,7 +6,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use App\State\JokeStateProvider;
+use App\State\JokeProvider;
 
 #[ApiResource(
     operations: [
@@ -17,7 +17,7 @@ use App\State\JokeStateProvider;
         'max_age' => 60,
         'shared_max_age' => 120
     ],
-    provider: JokeStateProvider::class
+    provider: JokeProvider::class
 )]
 class Joke
 {

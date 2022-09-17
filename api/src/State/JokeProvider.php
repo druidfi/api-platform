@@ -8,7 +8,7 @@ use ApiPlatform\State\ProviderInterface;
 use App\Entity\Joke;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class JokeStateProvider implements ProviderInterface
+class JokeProvider implements ProviderInterface
 {
     private HttpClientInterface $jokeClient;
 
