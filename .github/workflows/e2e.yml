@@ -1,14 +1,11 @@
-name: Release
-permissions:
-  contents: write 
-  pull-requests: write
+name: E2E
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'API Platform core tag'
-        required: true
+  push:
+    branches:
+      - main
+  pull_request: ~
+  workflow_dispatch: ~
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -16,7 +13,7 @@ concurrency:
 
 jobs:
   tests:
-    name: Update api-platform/core
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       -
@@ -42,14 +39,8 @@ jobs:
             pwa.cache-from=type=gha,scope=pwa-refs/heads/main
             pwa.cache-to=type=gha,scope=pwa-${{github.ref}},mode=max
       -
-        name: Update API Platform
-        run: docker compose run php composer update api-platform/symfony:${{ inputs.tag }} api-platform/doctrine-orm:${{ inputs.tag }}
+        name: Start services
+        run: docker compose -f compose.yaml -f compose.override.yaml up --wait --no-build
       -
-        name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          commit-message: 'chore: api-platform ${{ inputs.tag }}'
-          branch: api-platform-core
-          title: 'chore: api-platform ${{ inputs.tag }}'
-          token: ${{ secrets.RELEASE_TOKEN }}
-          body: 'Updates api-platform/core to ${{ inputs.tag }}'
+        name: Playwright
+        run: docker run --network host -w /app -v ./e2e:/app --rm --ipc=host mcr.microsoft.com/playwright:v1.48.1-noble /bin/sh -c 'npm i; npx playwright test;'
